@@ -3,7 +3,7 @@
 # renovate: datasource=github-releases depName=apollographql/router
 ARG ROUTER_VERSION=2.17.0
 
-FROM rust:1.95.0-slim-bookworm AS build
+FROM rust:1.98.0-slim-bookworm AS build
 ARG ROUTER_VERSION
 RUN apt-get update && apt-get install -y --no-install-recommends \
       git build-essential protobuf-compiler ca-certificates \
