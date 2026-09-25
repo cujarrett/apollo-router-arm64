@@ -5,8 +5,10 @@ ARG ROUTER_VERSION=2.17.0
 
 FROM rust:1.95.0-slim-bookworm AS build
 ARG ROUTER_VERSION
+# libprotobuf-dev holds google/protobuf/*.proto, which reports.proto imports.
+# Debian ships protoc without them.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      git build-essential protobuf-compiler ca-certificates \
+      git build-essential protobuf-compiler libprotobuf-dev ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 RUN rustup component add rustfmt
 WORKDIR /usr/src
