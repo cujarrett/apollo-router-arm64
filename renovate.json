@@ -1,0 +1,14 @@
+{
+  "extends": ["github>cujarrett/homelab//.github/renovate-shared"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/Dockerfile/"],
+      "matchStrings": ["ARG ROUTER_VERSION=(?<currentValue>[\\d.]+)"],
+      "depNameTemplate": "apollographql/router",
+      "datasourceTemplate": "github-releases",
+      "versioningTemplate": "semver",
+      "extractVersionTemplate": "^v?(?<version>.+)$"
+    }
+  ]
+}
