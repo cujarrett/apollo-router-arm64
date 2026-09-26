@@ -43,7 +43,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - uses: sigstore/cosign-installer@v3
+      - uses: sigstore/cosign-installer@v4.1.2
         if: github.ref == 'refs/heads/main'
 
       # Signed by digest, so Kyverno can verify it the same way it verifies subgraphs.
