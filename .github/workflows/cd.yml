@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     # Native arm64, so the Rust build runs at full speed with no emulation.
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-26.04-arm
     timeout-minutes: 120
     permissions:
       contents: read
