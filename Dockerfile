@@ -3,7 +3,7 @@
 # renovate: datasource=github-releases depName=apollographql/router
 ARG ROUTER_VERSION=2.17.0
 
-FROM rust:1.98.0-slim-bookworm AS build
+FROM rust:1.98.1-slim-bookworm AS build
 ARG ROUTER_VERSION
 # libprotobuf-dev holds google/protobuf/*.proto, which reports.proto imports.
 # Debian ships protoc without them.
