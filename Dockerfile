@@ -3,7 +3,7 @@
 # renovate: datasource=github-releases depName=apollographql/router
 ARG ROUTER_VERSION=2.18.0
 
-FROM rust:1.99.0-slim-bookworm AS build
+FROM rust:1.99.0-slim-bookworm@sha256:2c3a22f0a5533ea2dd5a16627bc841228151faa2d4de2644ac9987e4a2f1f2fa AS build
 ARG ROUTER_VERSION
 # libprotobuf-dev holds google/protobuf/*.proto, which reports.proto imports.
 # Debian ships protoc without them.
@@ -23,7 +23,7 @@ RUN mkdir -p /dist/config /dist/schema \
 
 # Runtime stage mirrors dockerfiles/Dockerfile.router upstream, so the Apollo operator
 # can swap this in for the official image with no other change.
-FROM debian:bookworm-slim
+FROM debian:bookworm-slim@sha256:7ff6ba31527b9e336162fa061746c366c4b2032f4d2cff2078bea43f78efe3f8
 ARG ROUTER_VERSION
 RUN useradd -m router \
     && apt-get update && apt-get install -y --no-install-recommends ca-certificates \
