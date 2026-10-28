@@ -36,6 +36,7 @@ jobs:
         with:
           context: .
           platforms: linux/arm64
+          sbom: true
           push: ${{ github.ref == 'refs/heads/main' }}
           tags: |
             ghcr.io/cujarrett/apollo-router-arm64:${{ steps.version.outputs.router }}
