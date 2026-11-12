@@ -6,47 +6,28 @@ on:
     branches: [main]
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      router: ${{ steps.version.outputs.router }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: version
+        run: echo "router=$(sed -n 's/^ARG ROUTER_VERSION=//p' Dockerfile)" >> "$GITHUB_OUTPUT"
+
   build:
-    # Native arm64, so the Rust build runs at full speed with no emulation.
-    runs-on: ubuntu-26.04-arm
-    timeout-minutes: 120
+    needs: version
     permissions:
       contents: read
       packages: write
       id-token: write
-    steps:
-      - uses: actions/checkout@v7
-
-      - id: version
-        run: echo "router=$(sed -n 's/^ARG ROUTER_VERSION=//p' Dockerfile)" >> "$GITHUB_OUTPUT"
-
-      - uses: docker/setup-buildx-action@v4
-
-      - uses: docker/login-action@v4
-        if: github.ref == 'refs/heads/main'
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # A PR builds but never pushes, so a Renovate bump proves the version compiles
-      # before it merges. The cargo layer is cached between runs.
-      - id: build
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          platforms: linux/arm64
-          sbom: true
-          push: ${{ github.ref == 'refs/heads/main' }}
-          tags: |
-            ghcr.io/cujarrett/apollo-router-arm64:${{ steps.version.outputs.router }}
-            ghcr.io/cujarrett/apollo-router-arm64:sha-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - uses: sigstore/cosign-installer@v4.1.3
-        if: github.ref == 'refs/heads/main'
-
-      # Signed by digest, so Kyverno can verify it the same way it verifies subgraphs.
-      - if: github.ref == 'refs/heads/main'
-        run: cosign sign --yes ghcr.io/cujarrett/apollo-router-arm64@${{ steps.build.outputs.digest }}
+      attestations: write
+    # A PR builds but never pushes, so a Renovate bump proves the version compiles before it merges.
+    uses: cujarrett/homelab/.github/workflows/build-image.yml@main
+    with:
+      image: ghcr.io/cujarrett/apollo-router-arm64
+      tags: |
+        ghcr.io/cujarrett/apollo-router-arm64:${{ needs.version.outputs.router }}
+        ghcr.io/cujarrett/apollo-router-arm64:sha-${{ github.sha }}
+      cache-scope: apollo-router-arm64
+      check-only: ${{ github.ref != 'refs/heads/main' }}
