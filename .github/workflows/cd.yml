@@ -4,6 +4,13 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Rebuilds an older version from main, such as the one the cluster still pins.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Router version to build. Empty means the Dockerfile version.
+        type: string
+        default: ""
 
 jobs:
   version:
@@ -13,7 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - id: version
-        run: echo "router=$(sed -n 's/^ARG ROUTER_VERSION=//p' Dockerfile)" >> "$GITHUB_OUTPUT"
+        env:
+          INPUT: ${{ inputs.version }}
+        run: echo "router=${INPUT:-$(sed -n 's/^ARG ROUTER_VERSION=//p' Dockerfile)}" >> "$GITHUB_OUTPUT"
 
   build:
     needs: version
@@ -29,5 +38,6 @@ jobs:
       tags: |
         ghcr.io/cujarrett/apollo-router-arm64:${{ needs.version.outputs.router }}
         ghcr.io/cujarrett/apollo-router-arm64:sha-${{ github.sha }}
+      build-args: ROUTER_VERSION=${{ needs.version.outputs.router }}
       cache-scope: apollo-router-arm64
       check-only: ${{ github.ref != 'refs/heads/main' }}
