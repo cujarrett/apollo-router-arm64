@@ -1,7 +1,7 @@
 # Apollo's router image aborts on a Raspberry Pi 5, whose kernel uses 16K pages.
 # jemalloc is compiled for 4K. Same source, same version, one build flag.
 # renovate: datasource=github-releases depName=apollographql/router
-ARG ROUTER_VERSION=2.19.0
+ARG ROUTER_VERSION=2.19.1
 
 FROM rust:1.100.0-slim-bookworm@sha256:7c7d4eb4d05b7781187a327809466cfddf29753f6defdc3d19a0e291951b7a37 AS build
 ARG ROUTER_VERSION
